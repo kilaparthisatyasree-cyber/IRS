@@ -1,0 +1,32 @@
+import numpy as np
+import pandas as pd
+
+corpus = [
+    'data science is one of the most important fields of science',
+    'this is the one of the best data science courses',
+    'data scientists analyze data'
+]
+
+words_set = set()
+for doc in corpus:
+    words_set.update(doc.split())
+
+n_docs = len(corpus)
+
+df_tf = pd.DataFrame(0.0, index=range(n_docs), columns=list(words_set))
+
+for i, doc in enumerate(corpus):
+    words = doc.split()
+    for word in words:
+        df_tf.loc[i, word] += 1 / len(words)
+
+idf = {}
+for word in words_set:
+    count = sum(1 for doc in corpus if word in doc.split())
+    idf[word] = np.log10(n_docs / count)
+
+idf_series = pd.Series(idf)
+
+df_tf_idf = df_tf * idf_series
+
+print(df_tf_idf)

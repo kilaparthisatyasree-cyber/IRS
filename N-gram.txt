@@ -1,0 +1,31 @@
+def generate_ngrams(word, n):
+    # Padding with "a" to handle start/end of word
+    padded_word = "a" + word + "a"
+    return set(padded_word[i:i+n] for i in range(len(padded_word) - n + 1))
+
+def correct_spelling(word, dictionary, n=2):
+    scores = []
+
+    for d in dictionary:
+        g1 = generate_ngrams(word, n)
+        g2 = generate_ngrams(d, n)
+        
+        # Calculate Jaccard similarity: Intersection / Union
+        intersection = len(g1 & g2)
+        union = len(g1 | g2)
+        score = intersection / union if union > 0 else 0
+        scores.append((score, d))
+
+    # Get the word with the highest similarity score
+    best_score, best_word = max(scores)
+    return best_word, best_score
+
+# Fixed: Dictionary items must be separated by commas, not dots
+dictionary = ["computer", "science", "engineering", "information", "technology", "spelling", "correction", "program"]
+misspelled = "technolgy"  # Example misspelling
+
+result, score = correct_spelling(misspelled, dictionary)
+
+print("Misspelled word:", misspelled)
+print("Suggested correction:", result)
+print("Similarity score:", round(score, 2))
